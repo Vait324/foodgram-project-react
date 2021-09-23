@@ -1,4 +1,3 @@
-from django.db.models import Exists, OuterRef
 from django.http.response import HttpResponse
 from djoser.views import UserViewSet
 from rest_framework import status, viewsets
@@ -90,28 +89,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
 
-    def get_queryset(self):
-        user = self.request.user
-
-        if user.is_anonymous:
-            return Recipe.objects.all()
-
-        queryset = Recipe.objects.annotate(
-            is_favorited=Exists(Favorites.objects.filter(
-                user=user, recipe_id=OuterRef('pk')
-            )),
-            is_in_shopping_cart=Exists(Purchase.objects.filter(
-                user=user, recipe_id=OuterRef('pk')
-            ))
-        )
-
-        if self.request.GET.get('is_favorited'):
-            return queryset.filter(is_favorited=True)
-        elif self.request.GET.get('is_in_shopping_cart'):
-            return queryset.filter(is_in_shopping_cart=True)
-
-        return queryset
-
     @action(detail=True, permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
         user = request.user
@@ -175,22 +152,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
         user = request.user
         shopping_cart = user.purchases.all()
         list = {}
-        for item in shopping_cart:
-            recipe = item.recipe
-            ingredients = IngredientInRecipe.objects.filter(recipe=recipe)
-            for ingredient in ingredients:
-                amount = ingredient.amount
-                name = ingredient.ingredient.name
-                measurement_unit = ingredient.ingredient.measurement_unit
-                if name not in list:
-                    list[name] = {
-                        'measurement_unit': measurement_unit,
-                        'amount': amount
-                    }
-                else:
-                    list[name]['amount'] = (
-                        list[name]['amount'] + amount
-                    )
+        ingredients = IngredientInRecipe.objects.filter(
+            recipe__in=shopping_cart.values_list('recipe')
+        )
+        for ingredient in ingredients:
+            amount = ingredient.amount
+            name = ingredient.ingredient.name
+            measurement_unit = ingredient.ingredient.measurement_unit
+            if name not in list:
+                list[name] = {
+                    'measurement_unit': measurement_unit,
+                    'amount': amount
+                }
+            else:
+                list[name]['amount'] = (
+                    list[name]['amount'] + amount
+                )
 
         shopping_list = []
         for item in list:

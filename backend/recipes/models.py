@@ -78,7 +78,8 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveIntegerField(
         verbose_name='Время приготовления',
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(1,
+                    message='Введите время приготовления')],
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
@@ -113,7 +114,6 @@ class IngredientInRecipe(models.Model):
     class Meta:
         verbose_name = 'Количество ингредиента'
         verbose_name_plural = 'Количество ингредиентов'
-        unique_together = ('ingredient', 'recipe')
         constraints = [
             models.UniqueConstraint(
                 fields=['ingredient', 'recipe'],
