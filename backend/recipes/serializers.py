@@ -81,8 +81,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         ingredients_set = set()
         if ingredients is None:
             raise serializers.ValidationError(
-                    'Добавьте минимум один ингредиент.'
-                )
+                'Добавьте минимум один ингредиент.'
+            )
         for ingredient in ingredients:
             if int(ingredient.get('amount')) <= 0:
                 raise serializers.ValidationError(
