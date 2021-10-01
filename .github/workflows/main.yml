@@ -71,11 +71,11 @@ jobs:
     needs: 
       - build_backend
       - build_frontend
-    if:
-      contains('
-        refs/heads/main
-        refs/heads/master
-      ', github.ref)
+    # if:
+    #   contains('
+    #     refs/heads/main
+    #     refs/heads/master
+    #   ', github.ref)
     steps:
       - name: executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
