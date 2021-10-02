@@ -150,7 +150,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=False, permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
         user = request.user
-        shopping_cart = user.purchases.all()
+        shopping_cart = Purchase.objects.filter(user=user)
         list = {}
         ingredients = IngredientInRecipe.objects.filter(
             recipe__in=shopping_cart.values_list('recipe')

@@ -43,12 +43,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='ingredientinrecipe',
             name='ingredient',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ingredients_amounts', to='recipes.Ingredient', verbose_name='Ингредиент'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='amounts', to='recipes.Ingredient', verbose_name='Ингредиент'),
         ),
         migrations.AddField(
             model_name='ingredientinrecipe',
             name='recipe',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ingredients_amounts', to='recipes.Recipe'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='amounts', to='recipes.Recipe'),
         ),
         migrations.AddField(
             model_name='follow',

@@ -50,7 +50,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     ingredients = IngredientInRecipeSerializer(
-        source='ingredients_amounts',
+        source='amounts',
         many=True, read_only=True,
     )
     is_favorited = serializers.SerializerMethodField()
@@ -110,9 +110,9 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         image = validated_data.pop('image')
-        recipe = Recipe.objects.create(image=image, **validated_data)
         tags = self.initial_data.get('tags')
         ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(image=image, **validated_data)
         self.create_or_update_method(f_tags=tags, f_ingredients=ingredients,
                                      f_recipe=recipe)
         return recipe
